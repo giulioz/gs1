@@ -1,0 +1,87 @@
+# Based on https://github.com/OwlPlug/owlplug-scanner/blob/master/.github/workflows/main.yml
+name: gs1
+
+on: 
+  push:
+    branches: 
+      - '**'
+
+jobs:
+  build-win:
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v3.3.0
+      with:
+        fetch-depth: 0
+        submodules: recursive
+    - name: "Download Projucer"
+      run: |
+           git clone -b 8.0.1 --depth 1 https://github.com/juce-framework/JUCE JUCE
+           bash -ex ./build/download-projucer.sh
+      shell: bash
+      env:
+        OS: windows
+    - name: "Build gs1"
+      run: sh -ex ./build/build-win.sh
+      shell: bash
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: gs1-win
+        path: |
+              ./Builds/VisualStudio2022/x64/Release/VST3/gs1.vst3
+              ./Builds/VisualStudio2022/x64/Release/Standalone Plugin/gs1.exe
+  build-osx:
+    runs-on: macos-13
+    steps:
+    - uses: actions/checkout@v3.3.0
+      with:
+        fetch-depth: 0
+        submodules: recursive
+    - name: "Download Projucer"
+      run: |
+           cd gs1
+           git clone -b 8.0.1 --depth 1 https://github.com/juce-framework/JUCE JUCE
+           bash -ex ./build/download-projucer.sh
+      shell: bash
+      env:
+        OS: osx
+    - name: "Build macOS"
+      run: sh -ex ./build/build-osx.sh
+      shell: bash
+    - name: "zip macOS"
+      run: |
+           cd ./Builds/MacOSX/build/Release/
+           zip -r gs1.vst3.macOS.zip gs1.vst3
+           zip -r gs1.component.macOS.zip gs1.component
+           zip -r gs1.app.macOS.zip gs1.app
+           cd -
+      shell: bash
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: gs1-osx
+        path: |
+              ./Builds/MacOSX/build/Release/gs1.vst3.macOS.zip
+              ./Builds/MacOSX/build/Release/gs1.component.macOS.zip
+              ./Builds/MacOSX/build/Release/gs1.app.macOS.zip
+  release:
+    name: "Release"
+    needs: [build-win, build-osx]
+    if: github.ref == 'refs/heads/main'
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - name: Retrieve artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./build
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: true
+          automatic_release_tag: latest
+          title: gs1 Latest
+          files: |
+                 build/gs1-osx
+                 build/gs1-win
