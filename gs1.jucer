@@ -2,10 +2,10 @@
 
 <JUCERPROJECT id="DSwmeO" name="gs1" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              pluginManufacturerCode="YAMA" pluginCode="YGS1" cppLanguageStandard="20"
+              pluginManufacturerCode="GlZs" pluginCode="YGS1" cppLanguageStandard="20"
               pluginFormats="buildAU,buildAUv3,buildStandalone,buildVST3" pluginName="GS1"
-              pluginDesc="GS1" companyName="Yamaha" pluginManufacturer="Yamaha"
-              bundleIdentifier="com.yamaha.gs1">
+              pluginDesc="GS1" companyName="Giulio Zausa" pluginManufacturer="Giulio Zausa"
+              bundleIdentifier="com.glzs.gs1">
   <MAINGROUP id="U4zWTk" name="gs1">
     <GROUP id="{A9A4FE8C-A726-5731-A9C6-45A227C17A55}" name="Source">
       <FILE id="AJqnYv" name="PluginProcessor.cpp" compile="1" resource="0"
